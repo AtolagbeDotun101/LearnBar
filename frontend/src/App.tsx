@@ -11,10 +11,10 @@ import ProfilePage from './pages/Profile/ProfilePage'
 import QuizPage from './pages/Quiz/QuizPage'
 import QuizResultPage from './pages/Quiz/QuizResultPage'
 import ProtectedRoutes from './components/auth/ProtectedRoutes'
+import { useAuth } from './context/AuthContext'
 
 const App = () => {
-  const isAuthenticated = true // Replace with actual authentication logic
-  const loading = true // Replace with actual loading state
+  const {isAuthenticated,loading} = useAuth();
 
   if (loading) {
     return (
