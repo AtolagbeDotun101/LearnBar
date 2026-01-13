@@ -8,7 +8,7 @@ import { API_PATHS } from '../utils/apiPath';
  * @param {string} password - User's password
  * @returns {Promise} User data and JWT token
  */
-const register = async (username, email, password) => {
+const register = async (username:string, email:string, password:string) => {
   try {
     const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
       username,
@@ -16,7 +16,7 @@ const register = async (username, email, password) => {
       password,
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
@@ -27,7 +27,7 @@ const register = async (username, email, password) => {
  * @param {string} password - User's password
  * @returns {Promise} User data and JWT token
  */
-const login = async (email, password) => {
+const login = async (email:string, password:string) => {
   try {
     const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
       email,
@@ -41,7 +41,7 @@ const login = async (email, password) => {
     }
     
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
@@ -54,7 +54,7 @@ const getProfile = async () => {
   try {
     const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
@@ -66,7 +66,7 @@ const getProfile = async () => {
  * @param {string} profileData.email - Updated email
  * @returns {Promise} Updated user profile data
  */
-const updateProfile = async (profileData) => {
+const updateProfile = async (profileData:object) => {
   try {
     const response = await axiosInstance.put(
       API_PATHS.AUTH.UPDATE_PROFILE,
@@ -79,7 +79,7 @@ const updateProfile = async (profileData) => {
     }
     
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
@@ -90,7 +90,7 @@ const updateProfile = async (profileData) => {
  * @param {string} newPassword - New password
  * @returns {Promise} Success message
  */
-const changePassword = async (currentPassword, newPassword) => {
+const changePassword = async (currentPassword:string, newPassword:string) => {
   try {
     const response = await axiosInstance.put(
       API_PATHS.AUTH.CHANGE_PASSWORD,
@@ -100,7 +100,7 @@ const changePassword = async (currentPassword, newPassword) => {
       }
     );
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
