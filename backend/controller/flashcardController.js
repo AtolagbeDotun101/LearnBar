@@ -8,7 +8,7 @@ export const getFlashcardsByDocument = async (req, res, next) => {
   try {
     const { documentId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(documentId)) {
+    if (!documentId) {
       return res.status(400).json({
         message: "Invalid document ID",
         success: false,
@@ -155,7 +155,7 @@ export const deleteFlashcard = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!id) {
       return res.status(400).json({
         message: "Invalid flashcard ID",
         success: false,

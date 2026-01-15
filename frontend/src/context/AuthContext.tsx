@@ -11,7 +11,7 @@ export const useAuth = ()=>{
 } 
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser]= useState<Object | null>(null);
+    const [user, setUser]= useState<any | null>(null);
     const [loading, setLoading]= useState(true);
     const [isAuthenticated, setIsAuthenticated]= useState(false);
 
@@ -37,9 +37,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const login = (userData:any, token: string)=>{
-          localStorage.setItem('token', token);
-         localStorage.setItem('user',userData);
+    const login = (responseData:any)=>{
+          const token = responseData.data?.token || responseData.token;
+  const userData = responseData.data?.user || responseData.user;
+  
+  if (!token || !userData) {
+    console.error('Invalid login response structure:', responseData);
+    return;
+  }
+  
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(userData));
+
 
          setUser(userData)
          setIsAuthenticated(true)

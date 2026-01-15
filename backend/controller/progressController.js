@@ -6,19 +6,21 @@ import Quiz from "../model/Quiz.js";
 // @route GET /api/progress/dashboard
 // @access private
 
-export const getDashboard = async (res, req, next) => {
+export const getDashboard = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    //Get counts
+    
+    // Get counts
     const totalDocuments = await Document.countDocuments({ userId });
     const totalFlashcardSets = await Flashcard.countDocuments({ userId });
-    const totalQuizzes = await Quiz.countDocuments({userId});
-    const completedQuizzes = Quiz.countDocuments({
+    const totalQuizzes = await Quiz.countDocuments({ userId });
+    const completedQuizzes = await Quiz.countDocuments({
       userId,
       completedAt: { $ne: null },
     });
+
     // Get flashcard statistics
-    const flashcardSets = await Flashcard.find({ userId });
+    const flashcardSets = await Flashcard.find({ userId }).lean();
 
     let totalFlashcards = 0;
     let reviewedFlashcards = 0;
@@ -34,7 +36,7 @@ export const getDashboard = async (res, req, next) => {
     const quizzes = await Quiz.find({
       userId,
       completedAt: { $ne: null },
-    });
+    }).lean();
 
     const averageScore =
       quizzes.length > 0
@@ -43,46 +45,45 @@ export const getDashboard = async (res, req, next) => {
           )
         : 0;
 
-    // Recent activity
-    const recentDocuments = await Document.find({
-        userId
-    }).sort({lastAccessed: -1})
-    .limit(5)
-    .select("title fileName lastAccessed status")
+    // Recent activity - ADD .lean() here
+    const recentDocuments = await Document.find({ userId })
+      .sort({ lastAccessed: -1 })
+      .limit(5)
+      .select("title fileName lastAccessed status")
+      .lean(); // ✅ Added
 
-    const recentQuizzes = await Quiz.find({
-        userId
-    })
-    .sort({createdAt: -1})
-    .limit(5)
-    .select("title score totalQuestions completetAt")
-    .populate("documentId", "title");
+    const recentQuizzes = await Quiz.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("title score totalQuestions completedAt")
+      .populate("documentId", "title")
+      .lean(); // ✅ Added
 
-
-    //mock data
-    const studyStreak = Math.floor(Math.random() * 7 ) + 1; 
+    // Mock data
+    const studyStreak = Math.floor(Math.random() * 7) + 1;
 
     res.status(200).json({
-        success:true,
-        data: {
-            overview:{
-                totalDocuments,
-                totalFlashcardSets,
-                totalFlashcards,
-                reviewedFlashcards,
-                starredFlashcards,
-                totalQuizzes,
-                completedQuizzes,
-                averageScore,
-                studyStreak
-            },
-            recentActivity:{
-                documents: recentDocuments,
-                quizzes: recentQuizzes
-            }
-        }
-    })
+      success: true,
+      data: {
+        overview: {
+          totalDocuments,
+          totalFlashcardSets,
+          totalFlashcards,
+          reviewedFlashcards,
+          starredFlashcards,
+          totalQuizzes,
+          completedQuizzes,
+          averageScore,
+          studyStreak,
+        },
+        recentActivity: {
+          documents: recentDocuments,
+          quizzes: recentQuizzes,
+        },
+      },
+    });
   } catch (error) {
     next(error);
   }
 };
+

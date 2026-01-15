@@ -12,6 +12,7 @@ import QuizPage from './pages/Quiz/QuizPage'
 import QuizResultPage from './pages/Quiz/QuizResultPage'
 import ProtectedRoutes from './components/auth/ProtectedRoutes'
 import { useAuth } from './context/AuthContext'
+import DocumentListPage from './pages/Document/DocumentListPage'
 
 const App = () => {
   const {isAuthenticated,loading} = useAuth();
@@ -35,7 +36,7 @@ const App = () => {
       {/* Protected Routes */}
       <Route element = {<ProtectedRoutes />} >
         <Route path='/dashboard' element={<DashboardPage />} />
-        <Route path='/documents' element={<DocumentDetailsPage />} />
+        <Route path='/documents' element={<DocumentListPage />} />
         <Route path='/documents/:id' element={<DocumentDetailsPage />} />
         <Route path='/flashcards' element={<FlashcardListPage />} />
         <Route path='/flashcards/:id' element={<FlashcardPage />} />

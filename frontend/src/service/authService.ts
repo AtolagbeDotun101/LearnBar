@@ -27,25 +27,18 @@ const register = async (username:string, email:string, password:string) => {
  * @param {string} password - User's password
  * @returns {Promise} User data and JWT token
  */
-const login = async (email:string, password:string) => {
+const login = async (email: string, password: string) => {
   try {
     const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
       email,
       password,
     });
     
-    // Store token in localStorage
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
-    
     return response.data;
-  } catch (error:any) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };
-
 /**
  * Get user profile
  * @returns {Promise} User profile data

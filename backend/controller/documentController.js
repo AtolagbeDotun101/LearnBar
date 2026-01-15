@@ -94,7 +94,7 @@ export const getDocuments = async (req, res, next) => {
     try {
         const documents = await Document.aggregate([
             {
-                match: { userId: mongoose.Types.ObjectId(req.user._id) }
+                $match: { userId: req.user._id }
             },
             {
                 $lookup: {
