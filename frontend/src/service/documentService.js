@@ -6,20 +6,21 @@ import { API_PATHS } from '../utils/apiPath';
  * @param {File} file - Document file to upload
  * @returns {Promise} Uploaded document data
  */
-const uploadDocument = async (file) => {
+const uploadDocument = async (formData) => {
   try {
-    const formData = new FormData();
-    formData.append('file', file);
+    
 
     const response = await axiosInstance.post(
       API_PATHS.DOCUMENTS.UPLOAD,
       formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      // {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // }
     );
+    // console.log(response);
+    
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'An unknown error occurred' };

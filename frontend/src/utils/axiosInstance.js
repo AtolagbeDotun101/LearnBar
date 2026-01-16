@@ -20,6 +20,11 @@ axiosInstance.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    // ✅ Fix: Don't set Content-Type for FormData
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+      // Browser will automatically set multipart/form-data with correct boundary
+    }
 
     return config;
   },
