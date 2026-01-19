@@ -13,15 +13,16 @@ const formatFileSize = (sizeInBytes:any) => {
 
 interface DocumentCardProps {
     document: any;
-    onDelete: (document: any)=> void;
+    onDelete: (document: any)=> void;   
 }
 
 const DocumentCard = ({document, onDelete}: DocumentCardProps) => {
-
+    
     const navigate = useNavigate();
 
     const handleNavigate = ()=>{
-            navigate(`/documents/${document.id}`);
+     
+            navigate(`/documents/${document._id}`);
     }
 
     const handleDelete = (e:any)=>{

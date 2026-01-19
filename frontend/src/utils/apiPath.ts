@@ -12,9 +12,9 @@ export const API_PATHS = {
   DOCUMENTS: {
     UPLOAD: "/api/documents",
     GET_DOCUMENTS: "/api/documents",
-    GET_DOCUMENT_BY_ID: (id: string) => `/api/documents/${id}`,
-    UPDATE_DOCUMENT: (id: string) => `/api/documents/${id}`,
-    DELETE_DOCUMENT: (id: string) => `/api/documents/${id}`,
+    GET_DOCUMENT_BY_ID: (documentId: string) => `/api/documents/${documentId}`,
+    UPDATE_DOCUMENT: (documentId: string) => `/api/documents/${documentId}`,
+    DELETE_DOCUMENT: (documentId: string) => `/api/documents/${documentId}`,
   },
 
   AI: {

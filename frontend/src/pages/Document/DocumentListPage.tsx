@@ -90,11 +90,13 @@ const handleConfirmDelete = async ()=>{
     setIsDeleteModalOpen(false);
     setSelectedDoc(null);
     setLoading(true);
-    setDocuments(documents.filter(doc=> doc._id !== selectedDoc._id));
+    setDocuments(documents.filter((doc:any) => doc._id !== selectedDoc._id));
+
   } catch (error) {
     toast.error("Failed to delete document");
     console.log("Delete document error: ", error);
   }finally{
+    setLoading(false);
     setDeleting(false);
   }
 }
@@ -139,6 +141,7 @@ const renderContent = ()=> {
           key={doc._id} 
           document={doc} 
           onDelete={()=> handleDeleteRequest(doc)} />
+         
         ))}
       </div>
     );

@@ -299,13 +299,7 @@ export const getChatHistory = async (req, res, next) => {
                 status: "failed",
             });
         }
-        if(!mongoose.Types.ObjectId.isValid(documentId)){
-            return res.status(400).json({
-                message: "Invalid document ID",
-                success: false,
-                status: "failed",
-            });
-        }
+    
         const document = await Document.findOne({_id: documentId, userId: req.user._id, status: "ready"});
         if(!document){
             return res.status(404).json({

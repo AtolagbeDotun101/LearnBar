@@ -37,7 +37,7 @@ const App = () => {
       <Route element = {<ProtectedRoutes />} >
         <Route path='/dashboard' element={<DashboardPage />} />
         <Route path='/documents' element={<DocumentListPage />} />
-        <Route path='/documents/:id' element={<DocumentDetailsPage />} />
+        <Route path='/documents/:documentId' element={<DocumentDetailsPage />} />
         <Route path='/flashcards' element={<FlashcardListPage />} />
         <Route path='/flashcards/:id' element={<FlashcardPage />} />
         <Route path='/profile' element={<ProfilePage />} />

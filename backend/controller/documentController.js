@@ -15,11 +15,13 @@ export const uploadDocument = async (req, res, next) => {
         const file = req.file;
 
         if (!file) {
-            return res.status(400).json({ message: 'No file uploaded',
-                 success: false,
-                 statusCode: 400
-                });
+            return res.status(400).json({ 
+                message: 'No file uploaded',
+                success: false,
+                statusCode: 400
+            });
         }
+        
         if (!title || title.trim().length === 0) {
             try {
                 fs.unlinkSync(file.path); 
@@ -35,21 +37,22 @@ export const uploadDocument = async (req, res, next) => {
         }
 
         const absolutePath = path.resolve(file.path);
-        //url to access the file can be constructed based on your server setup
         const baseUrl = `http://localhost:${process.env.PORT || 5000}`;
-        const fileUrl = `${baseUrl}/uploads/documents/${file.filename}`;
+        // Encode the filename for URLs with spaces
+        const encodedFileName = encodeURIComponent(file.filename);
+        const fileUrl = `${baseUrl}/uploads/documents/${encodedFileName}`;
 
         const document = new Document({
             userId: req.user._id,
             title: title.trim(),
+            fileName: file.originalname,
             filePath: absolutePath,
             fileUrl,
             fileType: file.mimetype,
-            fileName: file.originalname,
             fileSize: file.size,
-        
         });
-        //process PDF file, in prod use queue or background job
+        
+        // Process PDF file, in prod use queue or background job
         processPDF(document._id, absolutePath).catch((err) => {
             console.error("Error processing PDF:", err);
         });
@@ -64,7 +67,7 @@ export const uploadDocument = async (req, res, next) => {
     
     } catch (error) {
         if (req.file) {
-            //delete the uploaded file in case of error
+            // Delete the uploaded file in case of error
             try {
                 fs.unlinkSync(req.file.path);
             } catch (unlinkError) {
@@ -75,22 +78,37 @@ export const uploadDocument = async (req, res, next) => {
     }
 };
 
-//helper function to process PDF and chunk text
+// Helper function to process PDF and chunk text
 const processPDF = async (documentId, filePath) => {
     try {
-        const {text} = await extractTextFromPDF(filePath);
+        console.log(`Starting PDF processing for document: ${documentId}`);
+        const {text, numPages} = await extractTextFromPDF(filePath);
+        
+        console.log(`Extracted ${text.length} characters from ${numPages} pages`);
 
-        // create text chunks
-        const chunks = chunkText(text, 500, 50);
+        // Create text chunks
+        const textChunks = chunkText(text, 500, 50);
+        
+        console.log(`Created ${textChunks.length} chunks`);
 
-        //update document with chunks
+        // Map chunks to proper structure for DB
+        const chunks = textChunks.map((chunk, index) => ({
+            content: chunk.content || chunk,
+            pageNumber: chunk.pageNumber || 0,
+            chunkIndex: chunk.chunkIndex !== undefined ? chunk.chunkIndex : index,
+        }));
+
+        console.log(`First chunk sample:`, chunks[0]);
+
+        // Update document with chunks and extracted text
         await Document.findByIdAndUpdate(documentId, {
-            textChunks: chunks,
+            chunks: chunks,
+            extractedText: text,
             processed: true,
             status: 'ready',
         }); 
 
-        console.log( `Document : ${documentId} processed successfully with ${chunks.length} chunks.`);
+        console.log(`Document ${documentId} processed successfully with ${chunks.length} chunks.`);
 
     } catch (error) {
         console.error("Error in processPDF:", error);
@@ -101,9 +119,9 @@ const processPDF = async (documentId, filePath) => {
     }
 }
 
-//@desc    Get user's documents 
-//@route   GET /api/documents
-//@access  Private
+// @desc    Get user's documents 
+// @route   GET /api/documents
+// @access  Private
 export const getDocuments = async (req, res, next) => { 
     try {
         const documents = await Document.aggregate([
@@ -119,13 +137,12 @@ export const getDocuments = async (req, res, next) => {
                 }
             },
             {
-                $lookup:{
+                $lookup: {
                     from: 'quizzes',
                     localField: '_id',
                     foreignField: 'documentId',
                     as: 'quizzes'
                 }
-
             },
             {
                 $addFields: {
@@ -133,7 +150,8 @@ export const getDocuments = async (req, res, next) => {
                     quizCount: { $size: '$quizzes' }
                 }
             },
-            { $project: {
+            { 
+                $project: {
                     flashcards: 0,
                     quizzes: 0,
                     extractTextFromPDF: 0,
@@ -141,9 +159,10 @@ export const getDocuments = async (req, res, next) => {
                 }
             },
             {
-                $sort: { uploadDate: -1 }
+                $sort: { createdAt: -1 }
             }
-        ])
+        ]);
+        
         res.status(200).json({
             message: 'Documents fetched successfully',
             success: true,
@@ -165,7 +184,10 @@ export const deleteDocument = async (req, res, next) => {
         // Find the document
         const document = await Document.findOne({ _id: documentId, userId: req.user._id });
         if (!document) {
-            return res.status(404).json({ message: 'Document not found', success: false });
+            return res.status(404).json({ 
+                message: 'Document not found', 
+                success: false 
+            });
         }
 
         // Delete associated flashcards and quizzes
@@ -184,7 +206,10 @@ export const deleteDocument = async (req, res, next) => {
         // Delete the document from the database
         await document.deleteOne();
 
-        res.status(200).json({ message: 'Document deleted successfully', success: true });
+        res.status(200).json({ 
+            message: 'Document deleted successfully', 
+            success: true 
+        });
     } catch (error) {
         next(error);    
     }
@@ -200,7 +225,10 @@ export const getDocumentById = async (req, res, next) => {
         // Find the document
         const document = await Document.findOne({ _id: documentId, userId: req.user._id });
         if (!document) {
-            return res.status(404).json({ message: 'Document not found', success: false });
+            return res.status(404).json({ 
+                message: 'Document not found', 
+                success: false 
+            });
         }
 
         const flashcardCount = await Flashcard.countDocuments({ documentId: document._id });
@@ -208,10 +236,21 @@ export const getDocumentById = async (req, res, next) => {
         document.lastAccessed = new Date();
         await document.save(); 
 
-
         const documentData = document.toObject();
         documentData.flashcardCount = flashcardCount;
         documentData.quizCount = quizCount;
+        
+        // Ensure fileUrl is set with proper encoding
+        if (!documentData.fileUrl && documentData.fileName) {
+            const baseUrl = `http://localhost:${process.env.PORT || 5000}`;
+            const encodedFileName = encodeURIComponent(documentData.fileName);
+            documentData.fileUrl = `${baseUrl}/uploads/documents/${encodedFileName}`;
+        } else if (!documentData.fileUrl && documentData.filePath) {
+            const baseUrl = `http://localhost:${process.env.PORT || 5000}`;
+            const fileName = path.basename(documentData.filePath);
+            const encodedFileName = encodeURIComponent(fileName);
+            documentData.fileUrl = `${baseUrl}/uploads/documents/${encodedFileName}`;
+        }
 
         res.status(200).json({
             message: 'Document details fetched successfully',
@@ -223,9 +262,9 @@ export const getDocumentById = async (req, res, next) => {
     }
 };
 
-// @desc update document title
-// @route PUT /api/documents/:id
-// @access Private
+// @desc    Update document title
+// @route   PUT /api/documents/:id
+// @access  Private
 export const updateDocument = async (req, res, next) => {
     try {
         const documentId = req.params.id;
@@ -241,7 +280,10 @@ export const updateDocument = async (req, res, next) => {
 
         const document = await Document.findOne({ _id: documentId, userId: req.user._id });
         if (!document) {
-            return res.status(404).json({ message: 'Document not found', success: false });
+            return res.status(404).json({ 
+                message: 'Document not found', 
+                success: false 
+            });
         }
 
         document.title = title.trim();

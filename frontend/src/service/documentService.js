@@ -31,7 +31,7 @@ const uploadDocument = async (formData) => {
  * Get all documents for the user
  * @returns {Promise} Array of user documents
  */
-const getDocuments = async () => {
+const getDocuments = async (id) => {
   try {
     const response = await axiosInstance.get(API_PATHS.DOCUMENTS.GET_DOCUMENTS);
     return response.data;
