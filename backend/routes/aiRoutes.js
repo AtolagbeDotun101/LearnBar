@@ -4,7 +4,7 @@ import {
     generateQuiz,
     generateSummary,
     chat,
-    explainCOncept,
+    explainConcept,
     getChatHistory
 } from '../controller/aiController.js';
 import { protect } from '../middleware/auth.js';
@@ -55,7 +55,7 @@ router.use(protect);
  *       500:
  *         description: Server error
  */
-router.post('/generate-flashcards', generateFlashcards);
+router.post('/generate-flashcards/:documentId', generateFlashcards);
 
 /**
  * @swagger
@@ -230,7 +230,7 @@ router.post('/chat', chat);
  *       500:
  *         description: Server error
  */
-router.post('/explain-concept', explainCOncept);
+router.post('/explain-concept', explainConcept);
 
 /**
  * @swagger

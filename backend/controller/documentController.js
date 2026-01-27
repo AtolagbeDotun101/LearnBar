@@ -81,15 +81,12 @@ export const uploadDocument = async (req, res, next) => {
 // Helper function to process PDF and chunk text
 const processPDF = async (documentId, filePath) => {
     try {
-        console.log(`Starting PDF processing for document: ${documentId}`);
         const {text, numPages} = await extractTextFromPDF(filePath);
         
-        console.log(`Extracted ${text.length} characters from ${numPages} pages`);
 
         // Create text chunks
         const textChunks = chunkText(text, 500, 50);
         
-        console.log(`Created ${textChunks.length} chunks`);
 
         // Map chunks to proper structure for DB
         const chunks = textChunks.map((chunk, index) => ({
@@ -98,7 +95,6 @@ const processPDF = async (documentId, filePath) => {
             chunkIndex: chunk.chunkIndex !== undefined ? chunk.chunkIndex : index,
         }));
 
-        console.log(`First chunk sample:`, chunks[0]);
 
         // Update document with chunks and extracted text
         await Document.findByIdAndUpdate(documentId, {

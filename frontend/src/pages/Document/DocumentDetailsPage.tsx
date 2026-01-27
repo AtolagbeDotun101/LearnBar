@@ -7,6 +7,9 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
 import Tabs from '../../components/common/Tabs';
 import ChatInterface from '../../components/chat/ChatInterface';
+import AiActions from '../../components/ai/AiActions';
+import FlashcardManager from '../../components/flashcards/FlashcardManager';
+import QuizManager from '../../components/quizzes/QuizManager';
 
 const DocumentDetailsPage = () => {
   const { documentId } = useParams<{ documentId: string }>();
@@ -121,27 +124,15 @@ const DocumentDetailsPage = () => {
   };
   
   const renderAIActions = () => {
-    return (
-      <div className='p-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200'>
-        AI Actions Component - Coming Soon
-      </div>
-    );
+    return <AiActions/>
   };
 
   const renderFlashcardsTab = () => {
-    return (
-      <div className='p-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200'>
-        Flashcards Component - Coming Soon
-      </div>
-    );
+    return <FlashcardManager documentId={documentId || ''} />
   };
 
   const renderQuizzesTab = () => {
-    return (
-      <div className='p-8 text-center text-gray-500 bg-white rounded-lg border border-gray-200'>
-        Quizzes Component - Coming Soon
-      </div>
-    );
+    return <QuizManager documentId={documentId || ''}/>
   };
 
   // Create tabs array with functions that return components

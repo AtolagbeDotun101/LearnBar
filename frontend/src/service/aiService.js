@@ -58,14 +58,18 @@ const generateSummary = async (documentId) => {
  * @param {string} message - User message
  * @returns {Promise} AI response
  */
-const chat = async (documentId, message) => {
+const chat = async (documentId, question) => {
+  console.log(`${documentId} + ${question}`);
+  
   try {
     const response = await axiosInstance.post(
       API_PATHS.AI.CHAT,
-      { documentId, message }
+      { documentId, question }
     );
     return response.data;
   } catch (error) {
+    console.log(error);
+    
     throw error.response?.data || { message: 'An unknown error occurred' };
   }
 };

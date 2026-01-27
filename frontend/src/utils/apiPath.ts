@@ -18,7 +18,7 @@ export const API_PATHS = {
   },
 
   AI: {
-    GENERATE_FLASHCARDS: "/api/ai/generate-flashcards",
+    GENERATE_FLASHCARDS:(documentId: string) =>  `/api/ai/generate-flashcards/${documentId}`,
     GENERATE_QUIZ: "/api/ai/generate-quiz",
     GENERATE_SUMMARY: "/api/ai/generate-summary",
     CHAT: "/api/ai/chat",

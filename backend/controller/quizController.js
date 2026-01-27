@@ -9,7 +9,7 @@ export const getQuizzes = async (req, res, next) => {
       userId: req.user._id,
       documentId: req.params.documentId,
     })
-      .populate("documentId", "title", "fileName")
+      .populate("documentId", "title fileName")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
