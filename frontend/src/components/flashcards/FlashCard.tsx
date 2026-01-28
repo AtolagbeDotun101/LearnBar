@@ -18,7 +18,7 @@ const FlashCard = ({flashcard, onToggleStar}: FlashcardProp) => {
         <div className={`relative w-full h-full transition-transform duration-500 transform-gpu cursor-pointer`}
         style={{
             transformStyle: 'preserve-3d',
-            transform: isFlipped? 'rotateY(180deg)': 'rotate(0deg'
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
         }}
         onClick={handleFlip}>
             {/* Front of the card (Question) */}
@@ -68,7 +68,7 @@ const FlashCard = ({flashcard, onToggleStar}: FlashcardProp) => {
             style={{
                 backfaceVisibility :'hidden',
                 WebkitBackfaceVisibility: 'hidden',
-                transform: 'rotate(180deg)'
+                transform: 'rotateY(180deg)',
             }}>
                   {/* Star button */}
                   <div className='flex justify-end'>
@@ -99,7 +99,7 @@ const FlashCard = ({flashcard, onToggleStar}: FlashcardProp) => {
                   {/* Flip Indicator */}
                   <div className='flex items-center gap-2 text-xs text-white/70 font-medium'>
                     <RotateCcw className='w-3.5 h-3.5' strokeWidth={2} />
-                    <span>Click ti see question</span>
+                    <span>Click to see question</span>
                   </div>
             </div>
         </div>

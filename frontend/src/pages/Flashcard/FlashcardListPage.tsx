@@ -13,7 +13,7 @@ const FlashcardListPage = () => {
   useEffect(()=>{
     const fetchFlashcardSet = async ()=>{
       try {
-        const response = await flashcardService.getAllFlasgcardSets();
+        const response = await flashcardService.getAllFlashcardSets();
         setFlashcardSets(response.data);
       } catch (error) {
         toast.error('Failed to fetch flashcard sets.')

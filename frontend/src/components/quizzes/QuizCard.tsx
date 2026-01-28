@@ -53,14 +53,14 @@ const QuizCard = ({quiz, onDelete}:QuizCardProp) => {
         {/* ActionButton */}
         <div className='mt-2 pt-4 border-t border-slate-100'>
             {quiz?.userAnswers?.length > 0 ? (
-                <Link to={`/quizzes/${quiz._id}/results`}>
+                <Link to={`/quiz/${quiz._id}/result`}>
                     <button className='group/btn w-full inline-flex items-center justify-center gap-2 h-11 bg-slate-100 hover:bg-amber-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 cursor-pointer'>
                         <BarChart2 className='w-4 h-4' strokeWidth={2.5} />
                         View Results
                     </button> 
                     </Link>
             ):(
-                <Link to={`quizzes/${quiz._id}`}>
+                <Link to={`/quiz/${quiz._id}`}>
                     <button className='group/btn relative w-full bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 active:scale-95 overflow-hidden'>
                         <span className='relative z-10 flex items-center justify-center gap-2'>
                             <Play className='w-4 h-4' strokeWidth={2.5}/>

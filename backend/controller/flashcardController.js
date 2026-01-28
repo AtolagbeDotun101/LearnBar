@@ -54,51 +54,64 @@ export const getUserFlashcards = async (req, res, next) => {
   }
 };
 
-// @desc Review flashcard by marking them as reviewed
-// @route PUT /api/flashcards/review
+// @desc Review a single flashcard within a set
+// @route PUT /api/flashcards/:cardId/review
 // @access Private
 export const reviewFlashcard = async (req, res, next) => {
   try {
-    const { flashcardIds } = req.body;
+    const { cardId } = req.params;
 
-    const flashcardSet = await Flashcard.findOne({
-      "cards._id": { $in: flashcardIds },
-      userId: req.user._id,
-    });
-
-    if (!flashcardSet || flashcardSet.length === 0) {
-      return res.status(404).json({
-        message: "No flashcards found to review",
+    if (!cardId) {
+      return res.status(400).json({
+        message: "Invalid flashcard ID",
         success: false,
         status: "failed",
       });
     }
 
-    const cardIndex = flashcardSet.card.findIndex((card) =>
-      flashcardIds.includes(card._id.toString())
+    // Find the flashcard set that contains this card
+    const flashcardSet = await Flashcard.findOne({
+      "cards._id": cardId,
+      userId: req.user._id,
+    });
+
+    if (!flashcardSet) {
+      return res.status(404).json({
+        message: "Flashcard not found",
+        success: false,
+        status: "failed",
+      });
+    }
+
+    const cardIndex = flashcardSet.cards.findIndex(
+      (card) => card._id.toString() === cardId
     );
 
     if (cardIndex === -1) {
       return res.status(404).json({
-        message: "No matching flashcards found to review",
+        message: "Flashcard not found in the set",
         success: false,
         status: "failed",
       });
     }
 
-    // Mark the flashcards as reviewed
+    // Mark the flashcard as reviewed
     flashcardSet.cards[cardIndex].lastReviewed = new Date();
-    flashcardSet.cards[cardIndex].reviewCount += 1;
+    flashcardSet.cards[cardIndex].reviewCount =
+      (flashcardSet.cards[cardIndex].reviewCount || 0) + 1;
+
     await flashcardSet.save();
 
     res.status(200).json({
-      message: "Flashcards reviewed successfully",
+      message: "Flashcard reviewed successfully",
       success: true,
+      data: flashcardSet.cards[cardIndex],
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 // @desc Toggle flashcard favorite status
 // @route PUT /api/flashcards/:id/favorite

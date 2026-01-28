@@ -61,7 +61,7 @@ const FlashcardManager = ({documentId}: FlashcardManagerProp) => {
         if(selectedSet){
             handleReview(currentCardIndex);
             setCurrentCardIndex(
-                (prevIndex) => (prevIndex + 1) % selectedSet.cards.lenght
+                (prevIndex) => (prevIndex + 1) % selectedSet.cards.length
             );
         }
     }
@@ -70,7 +70,7 @@ const FlashcardManager = ({documentId}: FlashcardManagerProp) => {
         if(selectedSet){
             handleReview(currentCardIndex);
              setCurrentCardIndex(
-          (prevIndex) => (prevIndex - 1) % selectedSet.cards.lenght  
+          (prevIndex) => (prevIndex - 1 + selectedSet.cards.length) % selectedSet.cards.length  
         );
     }
     
@@ -80,10 +80,11 @@ const FlashcardManager = ({documentId}: FlashcardManagerProp) => {
         const currentCard = selectedSet?.cards[currentCardIndex];
         if(!currentCard) return;
         try {
-            await flashcardService.reviewFlashcard(currentCardIndex);
+            
+            await flashcardService.reviewFlashcard(currentCard._id, {});
             toast.success('Flashcard reviewed successfully!')
         } catch (error) {
-            toast.error('Failes to review flashcard.')
+            toast.error('Failed to review flashcard.')
         }
     }
 

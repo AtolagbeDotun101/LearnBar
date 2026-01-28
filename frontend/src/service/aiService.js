@@ -9,8 +9,8 @@ import { API_PATHS } from '../utils/apiPath';
 const generateFlashcards = async (documentId) => {
   try {
     const response = await axiosInstance.post(
-      API_PATHS.AI.GENERATE_FLASHCARDS,
-      { documentId }
+      // API expects documentId as a URL param
+      API_PATHS.AI.GENERATE_FLASHCARDS(documentId)
     );
     return response.data;
   } catch (error) {

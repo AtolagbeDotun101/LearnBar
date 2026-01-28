@@ -17,8 +17,9 @@ const QuizResultPage = () => {
     const fetchResults = async()=>{
       setLoading(true)
       try {
-        const data = await quizService.getQuozResults(quizId);
-        setResults(data)
+        if (!quizId) return;
+        const data = await quizService.getQuizResults(quizId);
+        setResults(data);
       } catch (error) {
         toast.error('Failed to fetch quiz results.')
         console.log(error);

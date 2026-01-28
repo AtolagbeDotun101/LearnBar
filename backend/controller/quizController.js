@@ -99,8 +99,10 @@ export const submitQuiz = async (req, res, next) => {
       }
     });
 
-    // calculate total score
-    const score = Math.round((correctCount / quiz.totalQuestions) * 100);
+    // calculate total score - fall back to questions.length if totalQuestions missing
+    const totalQuestions = quiz.totalQuestions || quiz.questions.length || 0;
+    const rawScore = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+    const score = Math.round(rawScore);
 
     //update quiz
     quiz.userAnswers = userAnswers;
@@ -114,7 +116,7 @@ export const submitQuiz = async (req, res, next) => {
         quizId: quiz._id,
         score,
         correctCount,
-        totalQuestions: quiz.totalQuestions,
+        totalQuestions,
         percentage: score,
         userAnswers,
       },

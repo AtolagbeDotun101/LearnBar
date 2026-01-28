@@ -14,7 +14,7 @@ import FlashCard from '../../components/flashcards/FlashCard';
 const FlashcardPage = () => {
 
   const {id: documentId} = useParams();
-  const [FlashcardSets , setFlashcardSets] = useState<any>([]);
+  const [FlashcardSets , setFlashcardSets] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [flashcards, setFlashcards] = useState<any>([]);
   const [generating, setGenerating] = useState(false);
@@ -22,32 +22,44 @@ const FlashcardPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchFlashcards = async ()=>{
+  const fetchFlashcards = async () => {
     setLoading(true);
     try {
-      const response = await flashcardService.getFlashcardsForDocument(documentId);
-      setFlashcardSets(response.data[0]);
-      setFlashcards(response.data[0]?.cards || []);
-    } catch (error) {
-      toast.error('Failed to get flashcards')
+      if (!documentId) return;
+
+      const response = await flashcardService.getFlashcardsForDoc(documentId as string);
+      // API returns { message, success, data: FlashcardSet[], count }
+      const sets = response.data || [];
+      const firstSet = sets[0] || null;
+
+      setFlashcardSets(firstSet);
+      setFlashcards(firstSet?.cards || []);
+      setCurentCardIndex(0);
+    }  catch (error: any) {
+      toast.error(error.message || 'Failed to generate flashcards');
     }finally{
       setLoading(false)
     }
   }
 
-  useEffect(()=>{
-    fetchFlashcards
-  }, [documentId])
+  useEffect(() => {
+    fetchFlashcards();
+  }, [documentId]);
 
-  const handleGenerateFlashcards = async()=>{
+  const handleGenerateFlashcards = async () => {
+    if (!documentId) {
+      toast.error('Invalid document. Please go back and reopen it.');
+      return;
+    }
+
     setGenerating(true);
     try {
-      const response = await aiService.generateFlashcards(documentId);
+      await aiService.generateFlashcards(documentId as string);
       toast.success('Flashcards generated successfully');
-      fetchFlashcards();
-    } catch (error) {
-      toast.error('Failed to generate Flashcard')
-    }finally{
+      await fetchFlashcards();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to generate flashcards');
+    } finally {
       setGenerating(false);
     }
   }
@@ -92,7 +104,11 @@ const FlashcardPage = () => {
     try {
       await flashcardService.deleteFlashcardSet(FlashcardSets._id);
       setIsDeleteModalOpen(false);
-      fetchFlashcards();
+      // Optimistically clear local state so UI updates immediately
+      setFlashcardSets(null);
+      setFlashcards([]);
+      setCurentCardIndex(0);
+      await fetchFlashcards();
     } catch (error:any) {
       toast.error(error.message || "Failed to delete flashcard set.")
     }finally{

@@ -103,6 +103,8 @@ export const generateQuiz = async (req, res, next) => {
             document.extractedText, 
             parseInt(numQuestions)
         );
+
+        const totalQuestions = questions.length;
         
         const quiz = await Quiz.create({
             userId: req.user._id,
@@ -110,6 +112,7 @@ export const generateQuiz = async (req, res, next) => {
             title: title || `${document.title} - Quiz`,
             description: description || `Quiz generated from ${document.title}`,
             questions: questions,
+            totalQuestions,
             score: 0,
         });
         

@@ -62,7 +62,7 @@ const QuizPage = () => {
 
       await quizService.submitQuiz(quizId, formattedAnswers);
       toast.success('Quiz submitted successfully!');
-      navigate(`quizzes/${quizId}/results`)
+      navigate(`/quiz/${quizId}/result`);
     } catch (error:any) {
       toast.error(error.message || 'Failed to submit quiz.')
     }finally{
